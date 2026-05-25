@@ -163,6 +163,17 @@
         .nav-links a:hover {
             color: var(--primary-neon);
         }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0; height: 2px;
+            bottom: -5px; left: 0;
+            background-color: var(--primary-neon);
+            transition: var(--transition);
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
         .hamburger {
             display: none;
             font-size: 1.5rem;
@@ -179,6 +190,7 @@
             padding: 0 5%;
             overflow: hidden;
         }
+        /* Gradient Background overlay simulating a dark studio */
         #hero::before {
             content: '';
             position: absolute;
@@ -492,31 +504,33 @@
 
     <nav id="navbar">
         <div class="logo">RAN <span>RENT</span></div>
-        <ul class="nav-links">
+        <ul class="nav-links" id="nav-links">
             <li><a href="#hero">Home</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="#cars">Fleet</a></li>
             <li><a href="#features">Features</a></li>
             <li><a href="#contact">Contact</a></li>
         </ul>
-        <div class="hamburger">
+        <div class="hamburger" id="hamburger">
             <i class="fas fa-bars"></i>
         </div>
     </nav>
 
     <section id="hero">
-        <img src="hero.jpg" alt="Luxury Car" class="hero-image">
+        <img src="https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&w=1200&q=80" alt="Luxury Car" class="hero-image">
+        
         <div class="hero-content reveal">
             <h1>Drive the <span>Future</span> of Luxury</h1>
             <p>Experience premium car rentals with seamless booking, pristine vehicles, and top-tier service tailored for executives and modern travelers.</p>
-            <a href="#cars" class="btn btn-primary">Book Now <i class="fas fa-arrow-right"></i></a>
+            <a href="#cars" class="btn btn-primary">Book Now <i class="fas fa-arrow-right" style="margin-left: 8px;"></i></a>
+            <a href="#contact" class="btn btn-outline" style="margin-left: 15px;">Contact Us</a>
         </div>
     </section>
 
     <section id="about" class="container">
         <div class="about-grid reveal">
             <div class="glass" style="padding: 2rem;">
-                <img src="about.jpg" alt="About Us" style="width:100%; border-radius: 8px; filter: grayscale(50%);">
+                <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=800&q=80" alt="About Us" style="width:100%; border-radius: 8px; filter: grayscale(50%);">
             </div>
             <div class="about-text">
                 <h3>Redefining Your Journey</h3>
@@ -544,7 +558,7 @@
         <div class="cars-grid">
             
             <div class="car-card glass reveal">
-                <img src="fortuner.png" alt="Toyota Fortuner">
+                <img src="https://images.unsplash.com/photo-1590362891991-f776e747a588?auto=format&fit=crop&w=600&q=80" alt="Toyota Fortuner">
                 <div class="car-info">
                     <div class="car-name">Toyota Fortuner</div>
                     <div class="car-price">$80<span>/day</span></div>
@@ -558,7 +572,7 @@
             </div>
 
             <div class="car-card glass reveal" style="transition-delay: 0.1s;">
-                <img src="civic.png" alt="Honda Civic">
+                <img src="https://images.unsplash.com/photo-1605515298946-d062f2e9da53?auto=format&fit=crop&w=600&q=80" alt="Honda Civic">
                 <div class="car-info">
                     <div class="car-name">Honda Civic</div>
                     <div class="car-price">$60<span>/day</span></div>
@@ -572,7 +586,7 @@
             </div>
 
             <div class="car-card glass reveal" style="transition-delay: 0.2s;">
-                <img src="pajero.png" alt="Pajero Sport">
+                <img src="https://images.unsplash.com/photo-1506015391300-415eb70bf8fb?auto=format&fit=crop&w=600&q=80" alt="Pajero Sport">
                 <div class="car-info">
                     <div class="car-name">Pajero Sport</div>
                     <div class="car-price">$85<span>/day</span></div>
@@ -586,7 +600,7 @@
             </div>
 
             <div class="car-card glass reveal" style="transition-delay: 0.3s;">
-                <img src="bmw.png" alt="BMW Series">
+                <img src="https://images.unsplash.com/photo-1555353540-64fd1ee67d6d?auto=format&fit=crop&w=600&q=80" alt="BMW Series">
                 <div class="car-info">
                     <div class="car-name">BMW 5 Series</div>
                     <div class="car-price">$120<span>/day</span></div>
@@ -713,7 +727,7 @@
     </footer>
 
     <script>
-        // Loading Screen
+        // 1. Remove Loading Screen on window load
         window.addEventListener('load', () => {
             const loader = document.getElementById('loader');
             loader.style.opacity = '0';
@@ -722,7 +736,7 @@
             }, 500);
         });
 
-        // Navbar Scroll Effect
+        // 2. Navbar Scroll Effect
         const navbar = document.getElementById('navbar');
         window.addEventListener('scroll', () => {
             if (window.scrollY > 50) {
@@ -732,16 +746,23 @@
             }
         });
 
-        // Mobile Menu Toggle
-        const hamburger = document.querySelector('.hamburger');
-        const navLinks = document.querySelector('.nav-links');
-        
+        // 3. Mobile Menu Toggle
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('nav-links');
+        const navItems = document.querySelectorAll('.nav-links a');
+
         hamburger.addEventListener('click', () => {
             navLinks.classList.toggle('nav-active');
-            hamburger.classList.toggle('toggle');
         });
 
-        // Scroll Reveal Animation
+        // Close mobile menu when a link is clicked
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navLinks.classList.remove('nav-active');
+            });
+        });
+
+        // 4. Scroll Reveal Animation
         function reveal() {
             var reveals = document.querySelectorAll('.reveal');
             for (var i = 0; i < reveals.length; i++) {
@@ -757,7 +778,7 @@
         window.addEventListener('scroll', reveal);
         reveal(); // Trigger on initial load
 
-        // Form Submit
+        // 5. Simple Form Prevent Default
         document.getElementById('bookingForm').addEventListener('submit', function(e) {
             e.preventDefault();
             alert('Thank you for choosing RAN RENTCAR! We will contact you shortly.');
