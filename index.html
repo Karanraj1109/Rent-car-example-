@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAN RENTCAR | Premium Car Rental</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS Variables */
+        :root {
+            --bg-dark: #050505;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --primary-neon: #00f0ff;
+            --primary-neon-dim: rgba(0, 240, 255, 0.2);
+            --text-light: #ffffff;
+            --text-muted: #a0aab2;
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        /* Loading Screen */
+        #loader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        .spinner {
+            width: 50px; height: 50px;
+            border: 3px solid var(--glass-border);
+            border-top: 3px solid var(--primary-neon);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 15px var(--primary-neon-dim);
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Typography & Utility */
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .section-title span {
+            color: var(--primary-neon);
+            text-shadow: 0 0 10px var(--primary-neon-dim);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 5rem 2rem;
+        }
+        
+        /* Glassmorphism Mixin */
+        .glass {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+        .btn-primary {
+            background: var(--primary-neon);
+            color: var(--bg-dark);
+            box-shadow: 0 0 15px var(--primary-neon-dim);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 0 25px var(--primary-neon);
+            transform: translateY(-2px);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-neon);
+            border: 1px solid var(--primary-neon);
+        }
+        .btn-outline:hover {
+            background: var(--primary-neon);
+            color: var(--bg-dark);
+            box-shadow: 0 0 15px var(--primary-neon-dim);
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+        nav.scrolled {
+            background: rgba(5, 5, 5, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 15px 5%;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+        .logo span {
+            color: var(--primary-neon);
+            text-shadow: 0 0 10px var(--primary-neon-dim);
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        .nav-links a {
+            font-size: 1rem;
+            font-weight: 400;
+            position: relative;
+            transition: var(--transition);
+        }
+        .nav-links a:hover {
+            color: var(--primary-neon);
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0; height: 2px;
+            bottom: -5px; left: 0;
+            background-color: var(--primary-neon);
+            transition: var(--transition);
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        .hamburger {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        /* Hero Section */
+        #hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding: 0 5%;
+            overflow: hidden;
+        }
+        /* Gradient Background overlay simulating a dark studio */
+        #hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 70% 50%, rgba(0, 240, 255, 0.15), transparent 50%),
+                        linear-gradient(to bottom, transparent, var(--bg-dark));
+            z-index: -1;
+        }
+        .hero-content {
+            max-width: 600px;
+            z-index: 1;
+        }
+        .hero-content h1 {
+            font-size: 4rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+        .hero-content p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+        .hero-image {
+            position: absolute;
+            right: -5%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 55%;
+            z-index: 0;
+            filter: drop-shadow(0 0 30px rgba(0, 240, 255, 0.2));
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(-50%) }
+            50% { transform: translateY(-53%) }
+            100% { transform: translateY(-50%) }
+        }
+
+        /* About Section */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        .about-text h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-neon);
+        }
+        .about-text p {
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        .about-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .stat-item h4 {
+            font-size: 2.5rem;
+            color: var(--text-light);
+        }
+        .stat-item p {
+            color: var(--primary-neon);
+            font-size: 0.9rem;
+        }
+
+        /* Cars Section */
+        .cars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        .car-card {
+            padding: 1.5rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .car-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px var(--primary-neon-dim);
+            border-color: var(--primary-neon);
+        }
+        .car-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: contain;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
+        .car-card:hover img {
+            transform: scale(1.05);
+        }
+        .car-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 1rem;
+        }
+        .car-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        .car-price {
+            color: var(--primary-neon);
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+        .car-price span {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+        .car-specs {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        .car-specs i {
+            color: var(--primary-neon);
+            margin-right: 5px;
+        }
+
+        /* Features Section */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2rem;
+        }
+        .feature-card {
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            transition: var(--transition);
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            background: rgba(0, 240, 255, 0.05);
+            border-color: var(--primary-neon);
+        }
+        .feature-card i {
+            font-size: 2.5rem;
+            color: var(--primary-neon);
+            margin-bottom: 1rem;
+        }
+        .feature-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Testimonial Section */
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .testi-card {
+            padding: 2rem;
+            position: relative;
+        }
+        .testi-card i.fa-quote-left {
+            font-size: 3rem;
+            color: var(--primary-neon-dim);
+            position: absolute;
+            top: 1rem; right: 2rem;
+        }
+        .testi-text {
+            color: var(--text-muted);
+            font-style: italic;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        .testi-user {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .testi-user img {
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Contact Section */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+        .contact-info-item {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .contact-icon {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            color: var(--primary-neon);
+            border: 1px solid var(--glass-border);
+        }
+        .contact-details h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.2rem;
+        }
+        .contact-details p {
+            color: var(--text-muted);
+        }
+        
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 15px;
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: var(--text-light);
+            outline: none;
+            transition: var(--transition);
+        }
+        input:focus, textarea:focus {
+            border-color: var(--primary-neon);
+            box-shadow: 0 0 10px var(--primary-neon-dim);
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--glass-border);
+            padding: 2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #020202;
+        }
+        .socials a {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            margin-left: 10px;
+            transition: var(--transition);
+        }
+        .socials a:hover {
+            background: var(--primary-neon);
+            color: var(--bg-dark);
+            transform: translateY(-3px);
+        }
+
+        /* Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 991px) {
+            .hero-content h1 { font-size: 3rem; }
+            .hero-image { width: 65%; opacity: 0.5; right: -10%; z-index: -1; }
+            .about-grid, .contact-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 70px; right: -100%;
+                width: 100%; height: 100vh;
+                background: rgba(5, 5, 5, 0.95);
+                backdrop-filter: blur(15px);
+                flex-direction: column;
+                align-items: center;
+                padding-top: 5rem;
+                transition: 0.4s;
+            }
+            .nav-links.nav-active { right: 0; }
+            .hamburger { display: block; }
+            footer { flex-direction: column; gap: 1rem; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <div class="spinner"></div>
+    </div>
+
+    <nav id="navbar">
+        <div class="logo">RAN <span>RENT</span></div>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="#hero">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#cars">Fleet</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div class="hamburger" id="hamburger">
+            <i class="fas fa-bars"></i>
+        </div>
+    </nav>
+
+    <section id="hero">
+        <img src="https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?auto=format&fit=crop&w=1200&q=80" alt="Luxury Car" class="hero-image">
+        
+        <div class="hero-content reveal">
+            <h1>Drive the <span>Future</span> of Luxury</h1>
+            <p>Experience premium car rentals with seamless booking, pristine vehicles, and top-tier service tailored for executives and modern travelers.</p>
+            <a href="#cars" class="btn btn-primary">Book Now <i class="fas fa-arrow-right" style="margin-left: 8px;"></i></a>
+            <a href="#contact" class="btn btn-outline" style="margin-left: 15px;">Contact Us</a>
+        </div>
+    </section>
+
+    <section id="about" class="container">
+        <div class="about-grid reveal">
+            <div class="glass" style="padding: 2rem;">
+                <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=800&q=80" alt="About Us" style="width:100%; border-radius: 8px; filter: grayscale(50%);">
+            </div>
+            <div class="about-text">
+                <h3>Redefining Your Journey</h3>
+                <p>RAN RENTCAR was founded with a single mission: to provide a hassle-free, premium driving experience. Whether you need a sophisticated sedan for a business meeting or a robust SUV for weekend adventures, our fleet is meticulously maintained to ensure peak performance and comfort.</p>
+                <div class="about-stats">
+                    <div class="stat-item">
+                        <h4>50+</h4>
+                        <p>Premium Cars</p>
+                    </div>
+                    <div class="stat-item">
+                        <h4>2K+</h4>
+                        <p>Happy Clients</p>
+                    </div>
+                    <div class="stat-item">
+                        <h4>24/7</h4>
+                        <p>Support Ready</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="cars" class="container">
+        <h2 class="section-title">Our Premium <span>Fleet</span></h2>
+        <div class="cars-grid">
+            
+            <div class="car-card glass reveal">
+                <img src="https://images.unsplash.com/photo-1590362891991-f776e747a588?auto=format&fit=crop&w=600&q=80" alt="Toyota Fortuner">
+                <div class="car-info">
+                    <div class="car-name">Toyota Fortuner</div>
+                    <div class="car-price">$80<span>/day</span></div>
+                </div>
+                <div class="car-specs">
+                    <span><i class="fas fa-cogs"></i> Auto</span>
+                    <span><i class="fas fa-gas-pump"></i> Diesel</span>
+                    <span><i class="fas fa-user"></i> 7 Seats</span>
+                </div>
+                <button class="btn btn-outline" style="width: 100%;">Rent Now</button>
+            </div>
+
+            <div class="car-card glass reveal" style="transition-delay: 0.1s;">
+                <img src="https://images.unsplash.com/photo-1605515298946-d062f2e9da53?auto=format&fit=crop&w=600&q=80" alt="Honda Civic">
+                <div class="car-info">
+                    <div class="car-name">Honda Civic</div>
+                    <div class="car-price">$60<span>/day</span></div>
+                </div>
+                <div class="car-specs">
+                    <span><i class="fas fa-cogs"></i> Auto</span>
+                    <span><i class="fas fa-gas-pump"></i> Petrol</span>
+                    <span><i class="fas fa-user"></i> 5 Seats</span>
+                </div>
+                <button class="btn btn-outline" style="width: 100%;">Rent Now</button>
+            </div>
+
+            <div class="car-card glass reveal" style="transition-delay: 0.2s;">
+                <img src="https://images.unsplash.com/photo-1506015391300-415eb70bf8fb?auto=format&fit=crop&w=600&q=80" alt="Pajero Sport">
+                <div class="car-info">
+                    <div class="car-name">Pajero Sport</div>
+                    <div class="car-price">$85<span>/day</span></div>
+                </div>
+                <div class="car-specs">
+                    <span><i class="fas fa-cogs"></i> Auto</span>
+                    <span><i class="fas fa-gas-pump"></i> Diesel</span>
+                    <span><i class="fas fa-user"></i> 7 Seats</span>
+                </div>
+                <button class="btn btn-outline" style="width: 100%;">Rent Now</button>
+            </div>
+
+            <div class="car-card glass reveal" style="transition-delay: 0.3s;">
+                <img src="https://images.unsplash.com/photo-1555353540-64fd1ee67d6d?auto=format&fit=crop&w=600&q=80" alt="BMW Series">
+                <div class="car-info">
+                    <div class="car-name">BMW 5 Series</div>
+                    <div class="car-price">$120<span>/day</span></div>
+                </div>
+                <div class="car-specs">
+                    <span><i class="fas fa-cogs"></i> Auto</span>
+                    <span><i class="fas fa-gas-pump"></i> Petrol</span>
+                    <span><i class="fas fa-user"></i> 5 Seats</span>
+                </div>
+                <button class="btn btn-outline" style="width: 100%;">Rent Now</button>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="features" class="container">
+        <h2 class="section-title">Why <span>Choose Us</span></h2>
+        <div class="features-grid">
+            <div class="feature-card glass reveal">
+                <i class="fas fa-shield-alt"></i>
+                <h4>Trusted Service</h4>
+                <p>Fully insured and verified vehicles for your peace of mind.</p>
+            </div>
+            <div class="feature-card glass reveal" style="transition-delay: 0.1s;">
+                <i class="fas fa-tags"></i>
+                <h4>Affordable Price</h4>
+                <p>Competitive daily and monthly rates with no hidden fees.</p>
+            </div>
+            <div class="feature-card glass reveal" style="transition-delay: 0.2s;">
+                <i class="fas fa-headset"></i>
+                <h4>24/7 Support</h4>
+                <p>Our dedicated team is available round the clock to assist you.</p>
+            </div>
+            <div class="feature-card glass reveal" style="transition-delay: 0.3s;">
+                <i class="fas fa-gem"></i>
+                <h4>Premium Cars</h4>
+                <p>Immaculate, latest-model vehicles detailed before every ride.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="container">
+        <h2 class="section-title">Client <span>Reviews</span></h2>
+        <div class="testimonial-grid">
+            <div class="testi-card glass reveal">
+                <i class="fas fa-quote-left"></i>
+                <p class="testi-text">"The BMW I rented was in pristine condition. The booking process was incredibly smooth and transparent. Highly recommended!"</p>
+                <div class="testi-user">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User">
+                    <div>
+                        <h5 style="color:#fff;">Michael R.</h5>
+                        <p style="font-size:0.8rem; color:var(--text-muted);">Business Executive</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testi-card glass reveal" style="transition-delay: 0.1s;">
+                <i class="fas fa-quote-left"></i>
+                <p class="testi-text">"Used their Fortuner for a family trip. The car handled beautifully and the 24/7 support team was very responsive."</p>
+                <div class="testi-user">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User">
+                    <div>
+                        <h5 style="color:#fff;">Sarah K.</h5>
+                        <p style="font-size:0.8rem; color:var(--text-muted);">Traveler</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="container">
+        <h2 class="section-title">Get In <span>Touch</span></h2>
+        <div class="contact-grid">
+            <div class="contact-info reveal">
+                <div class="contact-info-item">
+                    <div class="contact-icon"><i class="fab fa-whatsapp"></i></div>
+                    <div class="contact-details">
+                        <h4>WhatsApp</h4>
+                        <p>+62 812-3456-7890</p>
+                    </div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="contact-icon"><i class="far fa-envelope"></i></div>
+                    <div class="contact-details">
+                        <h4>Email Us</h4>
+                        <p>hello@ranrentcar.com</p>
+                    </div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div class="contact-details">
+                        <h4>Our Location</h4>
+                        <p>Medan, North Sumatra, Indonesia</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="contact-form glass reveal" style="padding: 2rem;">
+                <form id="bookingForm">
+                    <input type="text" placeholder="Your Name" required>
+                    <input type="email" placeholder="Your Email" required>
+                    <select class="glass" style="width: 100%; padding: 15px; color: var(--text-muted); outline:none; border: 1px solid var(--glass-border); border-radius:8px; background:var(--bg-dark);">
+                        <option value="" disabled selected>Select Car</option>
+                        <option value="fortuner">Toyota Fortuner</option>
+                        <option value="civic">Honda Civic</option>
+                        <option value="pajero">Pajero Sport</option>
+                        <option value="bmw">BMW 5 Series</option>
+                    </select>
+                    <textarea rows="4" placeholder="Message or Special Requests"></textarea>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-text">
+            <p>&copy; 2026 RAN RENTCAR. All rights reserved.</p>
+        </div>
+        <div class="socials">
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+        </div>
+    </footer>
+
+    <script>
+        // 1. Remove Loading Screen on window load
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 500);
+        });
+
+        // 2. Navbar Scroll Effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // 3. Mobile Menu Toggle
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('nav-links');
+        const navItems = document.querySelectorAll('.nav-links a');
+
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('nav-active');
+        });
+
+        // Close mobile menu when a link is clicked
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navLinks.classList.remove('nav-active');
+            });
+        });
+
+        // 4. Scroll Reveal Animation
+        function reveal() {
+            var reveals = document.querySelectorAll('.reveal');
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 100;
+
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add('active');
+                }
+            }
+        }
+        window.addEventListener('scroll', reveal);
+        reveal(); // Trigger on initial load
+
+        // 5. Simple Form Prevent Default
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you for choosing RAN RENTCAR! We will contact you shortly.');
+            this.reset();
+        });
+    </script>
+</body>
+</html>
