@@ -312,7 +312,7 @@
         .modal-header h3 { font-size: 1.8rem; font-weight: 800; color: #fff; }
         .modal-header p { color: var(--primary-neon); font-size: 0.9rem; margin-top: 5px; }
 
-        /* Floating WhatsApp Button */
+        /* Floating WhatsApp Button (Langsung Ke Nomor Kamu) */
         .floating-wa {
             position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
             background-color: #25D366; color: #fff; border-radius: 50%;
@@ -656,9 +656,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        // 1. Inisialisasi Supabase
+        // 1. Inisialisasi Supabase (Kunci sudah diupdate dengan benar)
         const supabaseUrl = 'https://nscmolmdgfsrnyqwljoj.supabase.co';
-        const supabaseKey = 'Sb_publishable_dUQ2eRkeEPgl5egiARv7HA_K4cuNVZf';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5zY21vbG1kZ2Zzcm55cXdsam9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5ODAyNDQsImV4cCI6MjA5NTU1NjI0NH0.MCOi4YSJGM8eC1YNAq4jn3E0uqAofFmRIEjzQer88CM';
         const clientSupabase = supabase.createClient(supabaseUrl, supabaseKey);
 
         // 2. Loading Screen
