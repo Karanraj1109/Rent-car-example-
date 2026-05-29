@@ -767,7 +767,8 @@
             submitBtn.disabled = true;
 
             const { data, error } = await clientSupabase
-                .from('pesan_klien')
+                // PERBAIKAN: Nama tabel sudah diganti menjadi pesan_klienn
+                .from('pesan_klienn')
                 .insert([
                     { nama: namaKlien, email: emailKlien, pesan: pesanKlien }
                 ]);
