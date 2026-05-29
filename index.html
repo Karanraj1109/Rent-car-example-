@@ -579,7 +579,7 @@
                     <div class="contact-icon"><i class="fab fa-whatsapp"></i></div>
                     <div class="contact-details">
                         <h4>Direct Line</h4>
-                        <p>+62 812-3456-7890</p>
+                        <p>+62 895-6140-03884</p>
                     </div>
                 </div>
                 <div class="contact-info-item">
@@ -628,17 +628,17 @@
                     <i class="fas fa-car"></i>
                 </div>
                 <div class="form-group">
-                    <input type="date" required>
+                    <input type="date" id="modalDate" required>
                 </div>
                 <div class="form-group">
-                    <input type="tel" placeholder="WhatsApp Number" required>
+                    <input type="tel" id="modalPhone" placeholder="WhatsApp Number" required>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Confirm Reservation</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Confirm Reservation via WA</button>
             </form>
         </div>
     </div>
 
-    <a href="https://wa.me/6281234567890" target="_blank" class="floating-wa">
+    <a href="https://wa.me/62895614003884" target="_blank" class="floating-wa">
         <i class="fab fa-whatsapp"></i>
     </a>
 
@@ -753,22 +753,19 @@
             if (e.target === modal) modal.classList.remove('active');
         });
 
-        // 6. Form Submission ke Supabase
+        // 6. Form Submission ke Supabase (Contact Us)
         document.getElementById('contactForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Ambil data input
             const namaKlien = document.getElementById('clientName').value;
             const emailKlien = document.getElementById('clientEmail').value;
             const pesanKlien = document.getElementById('clientMessage').value;
             
-            // Ubah teks tombol saat loading
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerText;
             submitBtn.innerText = 'Mengirim...';
             submitBtn.disabled = true;
 
-            // Proses Insert
             const { data, error } = await clientSupabase
                 .from('pesan_klien')
                 .insert([
@@ -783,15 +780,29 @@
                 this.reset();
             }
 
-            // Kembalikan tombol ke kondisi semula
             submitBtn.innerText = originalText;
             submitBtn.disabled = false;
         });
 
-        // Modal Form Submission (Opsional: Tetap statis sementara)
+        // 7. Modal Form Submission (Langsung kirim chat otomatis ke WA kamu)
         document.getElementById('modalForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            alert('Reservation requested! We will send a confirmation via WhatsApp shortly.');
+            
+            // Ambil data yang diisi pengunjung
+            const mobilPilihan = document.getElementById('modalCarInput').value;
+            const tanggalSewa = document.getElementById('modalDate').value;
+            const nomorHpPengunjung = document.getElementById('modalPhone').value;
+            
+            // Buat draf pesan WhatsApp
+            const pesanWA = `Halo admin RAN RENTCAR, saya ingin reservasi mobil:%0A%0A🚘 *Mobil:* ${mobilPilihan}%0A📅 *Tanggal:* ${tanggalSewa}%0A📞 *No. Telepon:* ${nomorHpPengunjung}%0A%0AMohon infokan ketersediaannya. Terima kasih!`;
+            
+            // Nomor WhatsApp tujuan (Nomor kamu)
+            const nomorTujuan = '62895614003884';
+            
+            // Buka WhatsApp di tab baru
+            window.open(`https://wa.me/${nomorTujuan}?text=${pesanWA}`, '_blank');
+            
+            // Tutup modal dan reset form
             modal.classList.remove('active');
             e.target.reset();
         });
